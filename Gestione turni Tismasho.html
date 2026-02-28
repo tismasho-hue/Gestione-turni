@@ -1,0 +1,2024 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestione Turni 2026 - Proudly made by Ivan</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-dark: #f8fafc;
+            --bg-card: #ffffff;
+            --bg-elevated: #f1f5f9;
+            --accent-primary: #4f46e5;
+            --accent-secondary: #0891b2;
+            --accent-warning: #d97706;
+            --accent-success: #059669;
+            --accent-danger: #dc2626;
+            --text-primary: #1e293b;
+            --text-secondary: #475569;
+            --text-muted: #94a3b8;
+            --border-color: #e2e8f0;
+            --turno-d: #2563eb;
+            --turno-n1: #7c3aed;
+            --turno-n2: #9333ea;
+            --turno-n3: #a855f7;
+            --turno-r: #6b7280;
+            --turno-cm: #d97706;
+            --turno-f: #059669;
+            --turno-a: #dc2626;
+            --sunday-bg: #fef2f2;
+        }
+
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: 
+                radial-gradient(ellipse at 20% 20%, rgba(79, 70, 229, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(8, 145, 178, 0.06) 0%, transparent 50%),
+                var(--bg-dark);
+        }
+
+        .login-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 48px;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
+        }
+
+        .login-logo {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .login-logo h1 {
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+        }
+
+        .login-logo p {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 14px 16px;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 16px;
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px 24px;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-primary), #4338ca);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px -5px rgba(79, 70, 229, 0.3);
+        }
+
+        .error-message {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #fca5a5;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .role-selector {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .role-card {
+            background: var(--bg-elevated);
+            border: 2px solid var(--border-color);
+            border-radius: 16px;
+            padding: 24px 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .role-card:hover {
+            border-color: var(--accent-primary);
+            transform: translateY(-2px);
+        }
+
+        .role-card.selected {
+            border-color: var(--accent-primary);
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .role-card .icon {
+            font-size: 32px;
+            margin-bottom: 12px;
+        }
+
+        .role-card h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .role-card p {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* Dashboard Styles */
+        .dashboard {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .dashboard-header {
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border-color);
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .header-logo {
+            font-size: 20px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .month-selector {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .month-selector select {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 8px 32px 8px 12px;
+            color: var(--text-primary);
+            font-size: 14px;
+            font-family: inherit;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .user-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--bg-elevated);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+        }
+
+        .user-badge .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent-success);
+        }
+
+        .btn-logout {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-logout:hover {
+            border-color: var(--accent-danger);
+            color: var(--accent-danger);
+        }
+
+        /* Tabs */
+        .tabs-container {
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border-color);
+            padding: 0 24px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 4px;
+        }
+
+        .tab {
+            padding: 12px 20px;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 14px;
+            font-weight: 500;
+            font-family: inherit;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s;
+        }
+
+        .tab:hover {
+            color: var(--text-secondary);
+        }
+
+        .tab.active {
+            color: var(--accent-primary);
+        }
+
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--accent-primary);
+            border-radius: 2px 2px 0 0;
+        }
+
+        /* Content Area */
+        .content {
+            flex: 1;
+            padding: 24px;
+            overflow: auto;
+        }
+
+        /* Sheet Styles */
+        .sheet-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .sheet-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .sheet-title {
+            font-size: 18px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sheet-title .emoji {
+            font-size: 24px;
+        }
+
+        .legend {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 4px;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            max-height: calc(100vh - 280px);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        th, td {
+            padding: 10px 8px;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+            white-space: nowrap;
+        }
+
+        th {
+            background: var(--bg-elevated);
+            font-weight: 600;
+            color: var(--text-secondary);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        th:first-child,
+        th:nth-child(2),
+        th:nth-child(3) {
+            position: sticky;
+            left: 0;
+            z-index: 11;
+            background: var(--bg-elevated);
+        }
+
+        th:first-child { left: 0; min-width: 40px; }
+        th:nth-child(2) { left: 40px; min-width: 180px; text-align: left; }
+        th:nth-child(3) { left: 220px; min-width: 60px; }
+
+        td:first-child,
+        td:nth-child(2),
+        td:nth-child(3) {
+            position: sticky;
+            background: var(--bg-card);
+        }
+
+        td:first-child { left: 0; }
+        td:nth-child(2) { left: 40px; text-align: left; font-weight: 500; }
+        td:nth-child(3) { left: 220px; }
+
+        .row-turno td:first-child {
+            background: var(--accent-primary);
+            color: white;
+            font-weight: 600;
+        }
+
+        .row-extra td:first-child {
+            background: var(--accent-warning);
+            color: white;
+            font-weight: 600;
+        }
+
+        .col-sunday {
+            background: var(--sunday-bg) !important;
+        }
+
+        .cell-input {
+            width: 100%;
+            min-width: 50px;
+            padding: 6px 4px;
+            background: transparent;
+            border: 1px solid transparent;
+            border-radius: 4px;
+            color: var(--text-primary);
+            text-align: center;
+            font-size: 12px;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 500;
+            transition: all 0.15s;
+        }
+
+        .cell-input:hover {
+            background: var(--bg-elevated);
+            border-color: var(--border-color);
+        }
+
+        .cell-input:focus {
+            outline: none;
+            background: var(--bg-elevated);
+            border-color: var(--accent-primary);
+        }
+
+        /* Turno colors */
+        .cell-input.turno-D { color: var(--turno-d); }
+        .cell-input.turno-N1 { color: var(--turno-n1); }
+        .cell-input.turno-N2 { color: var(--turno-n2); }
+        .cell-input.turno-N3 { color: var(--turno-n3); }
+        .cell-input.turno-R { color: var(--turno-r); }
+        .cell-input.turno-CM { color: var(--turno-cm); }
+        .cell-input.turno-F { color: var(--turno-f); }
+        .cell-input.turno-A { color: var(--turno-a); }
+        .cell-input.extra-positive { color: var(--accent-success); }
+        .cell-input.extra-negative { color: var(--accent-danger); }
+
+        .company-header {
+            background: linear-gradient(135deg, var(--accent-primary), #4f46e5);
+            color: white;
+            font-weight: 600;
+            text-align: left !important;
+            padding: 12px 16px !important;
+        }
+
+        .company-header td {
+            background: transparent !important;
+            position: static !important;
+        }
+
+        /* Config Sheet */
+        .config-grid {
+            display: grid;
+            gap: 24px;
+        }
+
+        .config-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 24px;
+        }
+
+        .config-section h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .config-table {
+            width: 100%;
+        }
+
+        .config-table th {
+            position: static;
+            text-align: left;
+            padding: 8px 12px;
+        }
+
+        .config-table td {
+            text-align: left;
+            padding: 8px 12px;
+        }
+
+        /* Summary columns styling */
+        .summary-col {
+            background: var(--bg-elevated);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+        }
+
+        .summary-header {
+            font-size: 10px;
+            line-height: 1.3;
+            white-space: pre-line;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .login-box {
+                margin: 16px;
+                padding: 32px 24px;
+            }
+            
+            .dashboard-header {
+                flex-direction: column;
+                gap: 16px;
+                padding: 16px;
+            }
+            
+            .header-left, .header-right {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        /* Instructions Sheet */
+        .instructions-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .instruction-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 20px;
+        }
+
+        .instruction-card h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: var(--accent-primary);
+        }
+
+        .instruction-list {
+            display: grid;
+            gap: 12px;
+        }
+
+        .instruction-item {
+            display: grid;
+            grid-template-columns: 60px 1fr 1fr;
+            gap: 16px;
+            align-items: center;
+            padding: 12px;
+            background: var(--bg-elevated);
+            border-radius: 8px;
+        }
+
+        .instruction-code {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .save-indicator {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: var(--accent-success);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+
+        .save-indicator.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 24px;
+            width: 100%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .modal-header h2 {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .modal-close {
+            background: transparent;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--text-muted);
+            padding: 4px 8px;
+        }
+
+        .modal-close:hover {
+            color: var(--accent-danger);
+        }
+
+        .employee-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .employee-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: var(--bg-elevated);
+            border-radius: 8px;
+        }
+
+        .employee-row input {
+            flex: 1;
+            padding: 8px 12px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: inherit;
+            color: var(--text-primary);
+        }
+
+        .employee-row input:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+        }
+
+        .employee-row .stipendio-input {
+            width: 100px;
+        }
+
+        .btn-icon {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 6px 10px;
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: all 0.2s;
+        }
+
+        .btn-icon:hover {
+            background: var(--bg-elevated);
+        }
+
+        .btn-icon.danger:hover {
+            border-color: var(--accent-danger);
+            color: var(--accent-danger);
+            background: rgba(220, 38, 38, 0.1);
+        }
+
+        .btn-add-employee {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            padding: 12px;
+            margin-top: 12px;
+            background: var(--bg-elevated);
+            border: 2px dashed var(--border-color);
+            border-radius: 8px;
+            color: var(--text-muted);
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-add-employee:hover {
+            border-color: var(--accent-primary);
+            color: var(--accent-primary);
+        }
+
+        .btn-manage {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-manage:hover {
+            border-color: var(--accent-primary);
+            color: var(--accent-primary);
+        }
+
+        .empty-row td {
+            height: 38px;
+            background: var(--bg-card);
+        }
+
+        .empty-row:hover td {
+            background: var(--bg-elevated);
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .sync-indicator {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: var(--text-muted);
+            padding: 4px 8px;
+            background: var(--bg-elevated);
+            border-radius: 4px;
+        }
+
+        .sync-indicator.online {
+            color: var(--accent-success);
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useCallback, useMemo } = React;
+
+        // ==================== SUPABASE ====================
+        const SUPABASE_URL = 'https://ilpsylhtoljilgcubrun.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlscHN5bGh0b2xqaWxnY3VicnVuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE5NzY4MTgsImV4cCI6MjA4NzU1MjgxOH0.Po-V23sHS5rNoL0P7gXQdubB9Rv1Hojns_LKtrC9hM0';
+        
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // ==================== DATA ====================
+        const CONFIG_DATA = {
+            turni: [
+                { codice: 'D', descrizione: 'Diurno 11:30 – 18:30', ore: 7, note: 'Nessuna ora notturna' },
+                { codice: 'N1', descrizione: 'Notturno 18:30 – 02:30', ore: 8, note: '2,5h notturne (00:00–02:30)' },
+                { codice: 'N2', descrizione: 'Notturno 19:30 – 02:30', ore: 7, note: '2,5h notturne (00:00–02:30)' },
+                { codice: 'N3', descrizione: 'Notturno 18:30 – 23:30', ore: 5, note: 'Nessuna ora notturna' },
+                { codice: 'R', descrizione: 'Riposo', ore: 0, note: '' },
+                { codice: 'CM', descrizione: 'Certificato Medico', ore: 0, note: 'Giornata assente giustificata' },
+                { codice: 'F', descrizione: 'Ferie', ore: 0, note: '' },
+                { codice: 'A', descrizione: 'Assenza Ingiustificata', ore: 0, note: '' }
+            ],
+            maggiorazioni: [
+                { tipo: 'Ora Extra Diurna', descrizione: 'Lavoro straordinario diurno', percentuale: 0.3, fascia: 'Qualsiasi ora diurna' },
+                { tipo: 'Ora Notturna Ord.', descrizione: 'Maggiorazione notturna ordinaria', percentuale: 0.2, fascia: '23:00 – 02:30' },
+                { tipo: 'Ora Extra Notturna', descrizione: 'Straordinario in fascia notturna', percentuale: 0.5, fascia: '23:00 – 02:30' },
+                { tipo: 'Domenica / Festivo', descrizione: 'Lavoro domenicale o nei festivi', percentuale: 0.3, fascia: 'Tutto il giorno' }
+            ],
+            oreNotturnePerTurno: [
+                { turno: 'D', oreNotturne: 0, note: 'Nessuna ora notturna' },
+                { turno: 'N1', oreNotturne: 3.5, note: '3,5h notturne (23:00–02:30)' },
+                { turno: 'N2', oreNotturne: 3.5, note: '3,5h notturne (23:00–02:30)' },
+                { turno: 'N3', oreNotturne: 0.5, note: '0,5h notturne (23:00–23:30)' }
+            ]
+        };
+
+        const INITIAL_SINERGICA_EMPLOYEES = [
+            { id: 1, nome: 'ABDIRAHMAN AHMED', stipendio: 1250 },
+            { id: 2, nome: 'ABDULLAH MAMUN', stipendio: 1200 },
+            { id: 3, nome: 'ABDULLAH MASUM', stipendio: 1200 },
+            { id: 4, nome: 'AHMED TOUATI', stipendio: 1300 },
+            { id: 5, nome: 'AHMED ULUSOW', stipendio: 1250 },
+            { id: 6, nome: 'AJENGUI WASSIM', stipendio: 1200 },
+            { id: 7, nome: 'AMARA KHALIL', stipendio: 1200 },
+            { id: 8, nome: 'ANNOUS KHAYRALLAH', stipendio: 1200 },
+            { id: 9, nome: 'EMANUELE HILLARY', stipendio: 1200 },
+            { id: 10, nome: 'ETI AKTER', stipendio: 1200 },
+            { id: 11, nome: 'EUGENIA CARLINO', stipendio: 1200 },
+            { id: 12, nome: 'FAKIR EBRAHIM', stipendio: 1200 },
+            { id: 13, nome: 'FOFANA', stipendio: 1200 },
+            { id: 14, nome: 'HAITHEM MAD', stipendio: 1200 },
+            { id: 15, nome: 'HASAN MD JAHID', stipendio: 1200 },
+            { id: 16, nome: 'HOSSAIN ESRAF', stipendio: 1200 },
+            { id: 17, nome: 'ISLAM AZHARUL', stipendio: 1200 },
+            { id: 18, nome: 'JLULU SHAHAJALAL', stipendio: 1200 },
+            { id: 19, nome: 'KABIR HOSSEN', stipendio: 1200 },
+            { id: 20, nome: 'KAWAR ABU', stipendio: 1300 },
+            { id: 21, nome: 'MAMOD SHUKUR', stipendio: 1200 },
+            { id: 22, nome: 'MD SARDAR', stipendio: 1200 },
+            { id: 23, nome: 'MIAH MD AMRAN', stipendio: 1200 },
+            { id: 24, nome: 'MIAH MD ASHIK', stipendio: 1300 },
+            { id: 25, nome: 'MIAH ROBIN', stipendio: 1200 },
+            { id: 26, nome: 'MIAH SABOJ', stipendio: 1200 },
+            { id: 27, nome: 'MIRIAM SCARPINO', stipendio: 1200 },
+            { id: 28, nome: 'NAYEEM ISLAM', stipendio: 1200 },
+            { id: 29, nome: 'SADDAM', stipendio: 1200 },
+            { id: 30, nome: 'SAID BEN MOHAMED', stipendio: 1200 },
+            { id: 31, nome: 'TOHIN JUBAIR ISLAM', stipendio: 1200 },
+            { id: 32, nome: 'TOMMASO GRECO', stipendio: 1300 },
+            { id: 33, nome: 'YAKI CEDRICK', stipendio: 1200 },
+            { id: 34, nome: 'YEAR MOHIUDDIN', stipendio: 1200 },
+            { id: 35, nome: 'RAHMAN MD HABIB', stipendio: 1200 },
+            { id: 36, nome: 'MIAH MD SOBUR', stipendio: 1200 },
+            { id: 37, nome: 'MIAH MD ASHRAFUL', stipendio: 1200 },
+            // Righe vuote per nuovi dipendenti
+            ...Array.from({ length: 50 }, (_, i) => ({ id: 38 + i, nome: '', stipendio: 1200 }))
+        ];
+
+        const INITIAL_TISMASHO_EMPLOYEES = [
+            { id: 1, nome: 'LUDOVICA RABUAZZO', stipendio: 930 },
+            { id: 2, nome: 'RAHAMAN MIZANUR', stipendio: 1300 },
+            { id: 3, nome: 'MADUDA ORPHEE', stipendio: 1300 },
+            { id: 4, nome: 'LEVANTE LORENZO', stipendio: 1700 },
+            { id: 5, nome: 'LUANA DAVANZO', stipendio: 1500 },
+            { id: 6, nome: 'DAVANZO LAISA', stipendio: 3000 },
+            { id: 7, nome: 'LEONE IVAN', stipendio: 3000 },
+            { id: 8, nome: 'RABUAZZO MARIO', stipendio: 2000 },
+            // Righe vuote per nuovi dipendenti
+            ...Array.from({ length: 50 }, (_, i) => ({ id: 9 + i, nome: '', stipendio: 1200 }))
+        ];
+
+        const MONTHS = [
+            { id: 'febbraio', name: 'Febbraio 2026', days: 28, firstDayWeekday: 0 },  // 1 Feb 2026 = Domenica
+            { id: 'marzo', name: 'Marzo 2026', days: 31, firstDayWeekday: 0 },        // 1 Mar 2026 = Domenica
+            { id: 'aprile', name: 'Aprile 2026', days: 30, firstDayWeekday: 3 },      // 1 Apr 2026 = Mercoledì
+            { id: 'maggio', name: 'Maggio 2026', days: 31, firstDayWeekday: 5 },      // 1 Mag 2026 = Venerdì
+            { id: 'giugno', name: 'Giugno 2026', days: 30, firstDayWeekday: 1 },      // 1 Giu 2026 = Lunedì
+            { id: 'luglio', name: 'Luglio 2026', days: 31, firstDayWeekday: 3 },      // 1 Lug 2026 = Mercoledì
+            { id: 'agosto', name: 'Agosto 2026', days: 31, firstDayWeekday: 6 },      // 1 Ago 2026 = Sabato
+            { id: 'settembre', name: 'Settembre 2026', days: 30, firstDayWeekday: 2 }, // 1 Set 2026 = Martedì
+            { id: 'ottobre', name: 'Ottobre 2026', days: 31, firstDayWeekday: 4 },    // 1 Ott 2026 = Giovedì
+            { id: 'novembre', name: 'Novembre 2026', days: 30, firstDayWeekday: 0 },  // 1 Nov 2026 = Domenica
+            { id: 'dicembre', name: 'Dicembre 2026', days: 31, firstDayWeekday: 2 },  // 1 Dic 2026 = Martedì
+        ];
+
+        const WEEKDAYS = ['DOM', 'LUN', 'MAR', 'MER', 'GIO', 'VEN', 'SAB'];
+
+        // ==================== UTILITIES ====================
+        const getWeekdayForDay = (monthData, day) => {
+            return WEEKDAYS[(monthData.firstDayWeekday + day - 1) % 7];
+        };
+
+        const isSunday = (monthData, day) => {
+            return getWeekdayForDay(monthData, day) === 'DOM';
+        };
+
+        const getTurnoClass = (value) => {
+            if (!value) return '';
+            const v = value.toUpperCase();
+            if (v === 'D') return 'turno-D';
+            if (v === 'N1') return 'turno-N1';
+            if (v === 'N2') return 'turno-N2';
+            if (v === 'N3') return 'turno-N3';
+            if (v === 'R') return 'turno-R';
+            if (v === 'CM') return 'turno-CM';
+            if (v === 'F') return 'turno-F';
+            if (v === 'A') return 'turno-A';
+            return '';
+        };
+
+        const getExtraClass = (value) => {
+            if (!value) return '';
+            const num = parseFloat(value);
+            if (isNaN(num)) return '';
+            if (num > 0) return 'extra-positive';
+            if (num < 0) return 'extra-negative';
+            return '';
+        };
+
+        // ==================== COMPONENTS ====================
+        
+        // Login Screen
+        const LoginScreen = ({ onLogin }) => {
+            const [step, setStep] = useState('password'); // password, role, adminPassword
+            const [password, setPassword] = useState('');
+            const [selectedRole, setSelectedRole] = useState(null);
+            const [adminPassword, setAdminPassword] = useState('');
+            const [error, setError] = useState('');
+
+            const handleInitialPassword = () => {
+                if (password === 'Oraridip') {
+                    setStep('role');
+                    setError('');
+                } else {
+                    setError('Password non valida');
+                }
+            };
+
+            const handleRoleSelect = (role) => {
+                setSelectedRole(role);
+                if (role === 'user') {
+                    onLogin('user');
+                } else {
+                    setStep('adminPassword');
+                }
+            };
+
+            const handleAdminPassword = () => {
+                if (adminPassword === 'gugigebi98') {
+                    onLogin('admin');
+                } else {
+                    setError('Password Admin non valida');
+                }
+            };
+
+            return (
+                <div className="login-container">
+                    <div className="login-box">
+                        <div className="login-logo">
+                            <h1>🕐 Gestione Turni</h1>
+                            <p>Sistema di gestione ore dipendenti 2026</p>
+                            <p style={{ marginTop: '8px', fontSize: '12px', color: 'var(--accent-primary)', fontWeight: 500 }}>Proudly made by Ivan</p>
+                        </div>
+
+                        {error && <div className="error-message">{error}</div>}
+
+                        {step === 'password' && (
+                            <>
+                                <div className="input-group">
+                                    <label>Password di accesso</label>
+                                    <input
+                                        type="password"
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                        onKeyPress={(e) => e.key === 'Enter' && handleInitialPassword()}
+                                        placeholder="Inserisci la password"
+                                        autoFocus
+                                    />
+                                </div>
+                                <button className="btn btn-primary" onClick={handleInitialPassword}>
+                                    Accedi
+                                </button>
+                            </>
+                        )}
+
+                        {step === 'role' && (
+                            <>
+                                <p style={{ marginBottom: 20, color: 'var(--text-secondary)', textAlign: 'center' }}>
+                                    Seleziona il tuo ruolo
+                                </p>
+                                <div className="role-selector">
+                                    <div 
+                                        className={`role-card ${selectedRole === 'admin' ? 'selected' : ''}`}
+                                        onClick={() => handleRoleSelect('admin')}
+                                    >
+                                        <div className="icon">👨‍💼</div>
+                                        <h3>Admin</h3>
+                                        <p>Accesso completo</p>
+                                    </div>
+                                    <div 
+                                        className={`role-card ${selectedRole === 'user' ? 'selected' : ''}`}
+                                        onClick={() => handleRoleSelect('user')}
+                                    >
+                                        <div className="icon">👤</div>
+                                        <h3>User</h3>
+                                        <p>Inserimento turni</p>
+                                    </div>
+                                </div>
+                            </>
+                        )}
+
+                        {step === 'adminPassword' && (
+                            <>
+                                <div className="input-group">
+                                    <label>Password Admin</label>
+                                    <input
+                                        type="password"
+                                        value={adminPassword}
+                                        onChange={(e) => setAdminPassword(e.target.value)}
+                                        onKeyPress={(e) => e.key === 'Enter' && handleAdminPassword()}
+                                        placeholder="Inserisci la password admin"
+                                        autoFocus
+                                    />
+                                </div>
+                                <button className="btn btn-primary" onClick={handleAdminPassword}>
+                                    Accedi come Admin
+                                </button>
+                                <button 
+                                    className="btn" 
+                                    style={{ marginTop: 12, background: 'transparent', color: 'var(--text-muted)' }}
+                                    onClick={() => setStep('role')}
+                                >
+                                    ← Torna indietro
+                                </button>
+                            </>
+                        )}
+                    </div>
+                </div>
+            );
+        };
+
+        // Employee Management Modal
+        const EmployeeModal = ({ company, employees, onSave, onClose }) => {
+            const [localEmployees, setLocalEmployees] = useState([...employees]);
+
+            const handleNameChange = (id, value) => {
+                setLocalEmployees(prev => prev.map(emp => 
+                    emp.id === id ? { ...emp, nome: value.toUpperCase() } : emp
+                ));
+            };
+
+            const handleStipendioChange = (id, value) => {
+                const numValue = parseInt(value) || 0;
+                setLocalEmployees(prev => prev.map(emp => 
+                    emp.id === id ? { ...emp, stipendio: numValue } : emp
+                ));
+            };
+
+            const handleDelete = (id) => {
+                setLocalEmployees(prev => prev.map(emp => 
+                    emp.id === id ? { ...emp, nome: '', stipendio: 1200 } : emp
+                ));
+            };
+
+            const handleSave = () => {
+                onSave(localEmployees);
+                onClose();
+            };
+
+            const activeEmployees = localEmployees.filter(e => e.nome.trim() !== '');
+            const emptySlots = localEmployees.filter(e => e.nome.trim() === '').slice(0, 5);
+
+            return (
+                <div className="modal-overlay" onClick={onClose}>
+                    <div className="modal" onClick={e => e.stopPropagation()}>
+                        <div className="modal-header">
+                            <h2>👥 Gestione Dipendenti - {company === 'sinergica' ? 'SINERGICA' : 'TISMASHO'}</h2>
+                            <button className="modal-close" onClick={onClose}>×</button>
+                        </div>
+                        
+                        <div className="employee-list">
+                            {activeEmployees.map((emp, idx) => (
+                                <div key={emp.id} className="employee-row">
+                                    <span style={{ width: 30, color: 'var(--text-muted)', fontSize: 12 }}>{idx + 1}</span>
+                                    <input
+                                        type="text"
+                                        value={emp.nome}
+                                        onChange={(e) => handleNameChange(emp.id, e.target.value)}
+                                        placeholder="Nome dipendente"
+                                    />
+                                    <input
+                                        type="number"
+                                        className="stipendio-input"
+                                        value={emp.stipendio}
+                                        onChange={(e) => handleStipendioChange(emp.id, e.target.value)}
+                                        placeholder="Stipendio"
+                                    />
+                                    <button 
+                                        className="btn-icon danger" 
+                                        onClick={() => handleDelete(emp.id)}
+                                        title="Rimuovi dipendente"
+                                    >
+                                        🗑️
+                                    </button>
+                                </div>
+                            ))}
+                            
+                            {emptySlots.length > 0 && (
+                                <div style={{ marginTop: 16 }}>
+                                    <p style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 8 }}>
+                                        Aggiungi nuovi dipendenti ({localEmployees.filter(e => e.nome.trim() === '').length} slot disponibili):
+                                    </p>
+                                    {emptySlots.map((emp) => (
+                                        <div key={emp.id} className="employee-row" style={{ background: 'transparent', border: '1px dashed var(--border-color)' }}>
+                                            <span style={{ width: 30, color: 'var(--text-muted)', fontSize: 12 }}>+</span>
+                                            <input
+                                                type="text"
+                                                value={emp.nome}
+                                                onChange={(e) => handleNameChange(emp.id, e.target.value)}
+                                                placeholder="Inserisci nome nuovo dipendente..."
+                                            />
+                                            <input
+                                                type="number"
+                                                className="stipendio-input"
+                                                value={emp.stipendio}
+                                                onChange={(e) => handleStipendioChange(emp.id, e.target.value)}
+                                                placeholder="Stipendio"
+                                            />
+                                            <div style={{ width: 40 }}></div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+
+                        <div style={{ display: 'flex', gap: 12, marginTop: 24 }}>
+                            <button className="btn btn-primary" onClick={handleSave} style={{ flex: 1 }}>
+                                💾 Salva Modifiche
+                            </button>
+                            <button className="btn" onClick={onClose} style={{ background: 'var(--bg-elevated)', color: 'var(--text-secondary)' }}>
+                                Annulla
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // Config Sheet (Admin only)
+        const ConfigSheet = () => {
+            return (
+                <div className="config-grid">
+                    <div className="config-section">
+                        <h3>⚙️ Turni di Lavoro</h3>
+                        <table className="config-table">
+                            <thead>
+                                <tr>
+                                    <th>Codice</th>
+                                    <th>Descrizione Turno</th>
+                                    <th>Ore Lavorate</th>
+                                    <th>Note</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {CONFIG_DATA.turni.map((t, i) => (
+                                    <tr key={i}>
+                                        <td><span className={`cell-input turno-${t.codice}`}>{t.codice}</span></td>
+                                        <td>{t.descrizione}</td>
+                                        <td>{t.ore}</td>
+                                        <td style={{ color: 'var(--text-muted)' }}>{t.note}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div className="config-section">
+                        <h3>💰 Maggiorazioni – CCNL Ristorazione</h3>
+                        <table className="config-table">
+                            <thead>
+                                <tr>
+                                    <th>Tipo</th>
+                                    <th>Descrizione</th>
+                                    <th>%</th>
+                                    <th>Fascia Oraria</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {CONFIG_DATA.maggiorazioni.map((m, i) => (
+                                    <tr key={i}>
+                                        <td style={{ fontWeight: 500 }}>{m.tipo}</td>
+                                        <td>{m.descrizione}</td>
+                                        <td style={{ color: 'var(--accent-success)' }}>+{m.percentuale * 100}%</td>
+                                        <td style={{ color: 'var(--text-muted)' }}>{m.fascia}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div className="config-section">
+                        <h3>🌙 Ore Notturne per Turno (23:00–02:30)</h3>
+                        <table className="config-table">
+                            <thead>
+                                <tr>
+                                    <th>Turno</th>
+                                    <th>Ore Notturne Ordinarie</th>
+                                    <th>Note</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {CONFIG_DATA.oreNotturnePerTurno.map((o, i) => (
+                                    <tr key={i}>
+                                        <td><span className={`cell-input turno-${o.turno}`}>{o.turno}</span></td>
+                                        <td>{o.oreNotturne}</td>
+                                        <td style={{ color: 'var(--text-muted)' }}>{o.note}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            );
+        };
+
+        // Instructions Sheet
+        const InstructionsSheet = () => {
+            return (
+                <div className="instructions-container">
+                    <div className="instruction-card">
+                        <h3>📝 Codici Turno</h3>
+                        <div className="instruction-list">
+                            <div className="instruction-item">
+                                <span className="instruction-code turno-D">D</span>
+                                <span>Turno Diurno 11:30–18:30</span>
+                                <span style={{ color: 'var(--text-muted)' }}>Scrivi D nella riga TURNO</span>
+                            </div>
+                            <div className="instruction-item">
+                                <span className="instruction-code turno-N1">N1</span>
+                                <span>Turno Nott. 18:30–02:30</span>
+                                <span style={{ color: 'var(--text-muted)' }}>Scrivi N1 nella riga TURNO</span>
+                            </div>
+                            <div className="instruction-item">
+                                <span className="instruction-code turno-N2">N2</span>
+                                <span>Turno Nott. 19:30–02:30</span>
+                                <span style={{ color: 'var(--text-muted)' }}>Scrivi N2 nella riga TURNO</span>
+                            </div>
+                            <div className="instruction-item">
+                                <span className="instruction-code turno-N3">N3</span>
+                                <span>Turno Nott. 18:30–23:30</span>
+                                <span style={{ color: 'var(--text-muted)' }}>Scrivi N3 nella riga TURNO</span>
+                            </div>
+                            <div className="instruction-item">
+                                <span className="instruction-code turno-R">R</span>
+                                <span>Riposo</span>
+                                <span style={{ color: 'var(--text-muted)' }}>Scrivi R nella riga TURNO</span>
+                            </div>
+                            <div className="instruction-item">
+                                <span className="instruction-code turno-CM">CM</span>
+                                <span>Certificato Medico</span>
+                                <span style={{ color: 'var(--text-muted)' }}>Scrivi CM nella riga TURNO</span>
+                            </div>
+                            <div className="instruction-item">
+                                <span className="instruction-code turno-F">F</span>
+                                <span>Ferie</span>
+                                <span style={{ color: 'var(--text-muted)' }}>Scrivi F nella riga TURNO</span>
+                            </div>
+                            <div className="instruction-item">
+                                <span className="instruction-code turno-A">A</span>
+                                <span>Assenza Ingiustificata</span>
+                                <span style={{ color: 'var(--text-muted)' }}>Scrivi A nella riga TURNO</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="instruction-card">
+                        <h3>⏱️ Ore Extra / Mancanti</h3>
+                        <div className="instruction-list">
+                            <div className="instruction-item">
+                                <span className="instruction-code extra-positive">+1</span>
+                                <span>+1 ora extra rispetto al turno</span>
+                                <span style={{ color: 'var(--text-muted)' }}>Scrivi nella riga ± (gialla)</span>
+                            </div>
+                            <div className="instruction-item">
+                                <span className="instruction-code extra-negative">-0.5</span>
+                                <span>30 min mancanti</span>
+                                <span style={{ color: 'var(--text-muted)' }}>Scrivi nella riga ± (gialla)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="instruction-card">
+                        <h3>💰 Maggiorazioni (calcolate automaticamente)</h3>
+                        <div className="instruction-list">
+                            <div className="instruction-item">
+                                <span className="instruction-code" style={{ color: 'var(--accent-success)' }}>+30%</span>
+                                <span>Ore extra diurne</span>
+                                <span style={{ color: 'var(--text-muted)' }}>Calcolato su riga ± con turno D o N3</span>
+                            </div>
+                            <div className="instruction-item">
+                                <span className="instruction-code" style={{ color: 'var(--accent-success)' }}>+20%</span>
+                                <span>Ore notturne ordinarie (23:00–02:30)</span>
+                                <span style={{ color: 'var(--text-muted)' }}>Calcolato per N1 e N2</span>
+                            </div>
+                            <div className="instruction-item">
+                                <span className="instruction-code" style={{ color: 'var(--accent-success)' }}>+50%</span>
+                                <span>Ore extra notturne</span>
+                                <span style={{ color: 'var(--text-muted)' }}>Calcolato su riga ± con turno N1 o N2</span>
+                            </div>
+                            <div className="instruction-item">
+                                <span className="instruction-code" style={{ color: 'var(--accent-success)' }}>+30%</span>
+                                <span>Domenica/Festivo</span>
+                                <span style={{ color: 'var(--text-muted)' }}>Calcolato per domeniche lavorate</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // Turni Sheet (shared between User and Admin)
+        const TurniSheet = ({ month, data, onDataChange, readOnly = false, sinergicaEmployees, tismashoEmployees, onManageEmployees, isAdmin }) => {
+            const monthData = MONTHS.find(m => m.id === month) || MONTHS[0];
+            const days = Array.from({ length: monthData.days }, (_, i) => i + 1);
+            const monthDataValues = data[month] || { sinergica: {}, tismasho: {} };
+
+            const handleCellChange = (company, empId, rowType, day, value) => {
+                onDataChange(month, company, empId, rowType, day, value);
+            };
+
+            const renderEmployeeRows = (employees, company) => {
+                const activeEmployees = employees.filter(e => e.nome.trim() !== '');
+                
+                return activeEmployees.map((emp) => {
+                    const empData = monthDataValues[company]?.[emp.id] || { turni: {}, extra: {} };
+                    
+                    return (
+                        <React.Fragment key={`${company}-${emp.id}`}>
+                            <tr className="row-turno">
+                                <td>T</td>
+                                <td>{emp.nome}</td>
+                                <td>{company === 'sinergica' ? 'SINE' : 'TISM'}</td>
+                                {days.map(day => (
+                                    <td key={day} className={isSunday(monthData, day) ? 'col-sunday' : ''}>
+                                        <input
+                                            className={`cell-input ${getTurnoClass(empData.turni[day])}`}
+                                            value={empData.turni[day] || ''}
+                                            onChange={(e) => handleCellChange(company, emp.id, 'turni', day, e.target.value.toUpperCase())}
+                                            disabled={readOnly}
+                                            maxLength={2}
+                                        />
+                                    </td>
+                                ))}
+                            </tr>
+                            <tr className="row-extra">
+                                <td>±</td>
+                                <td></td>
+                                <td></td>
+                                {days.map(day => (
+                                    <td key={day} className={isSunday(monthData, day) ? 'col-sunday' : ''}>
+                                        <input
+                                            className={`cell-input ${getExtraClass(empData.extra[day])}`}
+                                            value={empData.extra[day] || ''}
+                                            onChange={(e) => handleCellChange(company, emp.id, 'extra', day, e.target.value)}
+                                            disabled={readOnly}
+                                            maxLength={4}
+                                        />
+                                    </td>
+                                ))}
+                            </tr>
+                        </React.Fragment>
+                    );
+                });
+            };
+
+            const sinergicaActive = sinergicaEmployees.filter(e => e.nome.trim() !== '').length;
+            const tismashoActive = tismashoEmployees.filter(e => e.nome.trim() !== '').length;
+
+            return (
+                <div className="sheet-container">
+                    <div className="sheet-header">
+                        <div className="sheet-title">
+                            <span className="emoji">📅</span>
+                            Inserimento Turni – {monthData.name}
+                        </div>
+                        <div className="legend">
+                            <div className="legend-item">
+                                <div className="legend-color" style={{ background: 'var(--turno-d)' }}></div>
+                                D=Diurno
+                            </div>
+                            <div className="legend-item">
+                                <div className="legend-color" style={{ background: 'var(--turno-n1)' }}></div>
+                                N1/N2/N3=Nott.
+                            </div>
+                            <div className="legend-item">
+                                <div className="legend-color" style={{ background: 'var(--turno-r)' }}></div>
+                                R=Riposo
+                            </div>
+                            <div className="legend-item">
+                                <div className="legend-color" style={{ background: 'var(--turno-cm)' }}></div>
+                                CM=Cert.Med.
+                            </div>
+                            <div className="legend-item">
+                                <div className="legend-color" style={{ background: 'var(--turno-f)' }}></div>
+                                F=Ferie
+                            </div>
+                            <div className="legend-item">
+                                <div className="legend-color" style={{ background: 'var(--turno-a)' }}></div>
+                                A=Assenza
+                            </div>
+                        </div>
+                    </div>
+                    <div className="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>N°</th>
+                                    <th>COGNOME / NOME</th>
+                                    <th>SOC.</th>
+                                    {days.map(day => (
+                                        <th key={day} className={isSunday(monthData, day) ? 'col-sunday' : ''}>
+                                            <div>{day}</div>
+                                            <div style={{ fontSize: '10px', fontWeight: 400 }}>
+                                                {getWeekdayForDay(monthData, day)}
+                                            </div>
+                                        </th>
+                                    ))}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr className="company-header">
+                                    <td colSpan={3 + days.length}>
+                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                            <span>🏢 SINERGICA — {sinergicaActive} funzionari</span>
+                                            {isAdmin && (
+                                                <button className="btn-manage" onClick={() => onManageEmployees('sinergica')}>
+                                                    ✏️ Gestisci
+                                                </button>
+                                            )}
+                                        </div>
+                                    </td>
+                                </tr>
+                                {renderEmployeeRows(sinergicaEmployees, 'sinergica')}
+                                
+                                <tr className="company-header">
+                                    <td colSpan={3 + days.length}>
+                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                            <span>🏢 TISMASHO — {tismashoActive} funzionari</span>
+                                            {isAdmin && (
+                                                <button className="btn-manage" onClick={() => onManageEmployees('tismasho')}>
+                                                    ✏️ Gestisci
+                                                </button>
+                                            )}
+                                        </div>
+                                    </td>
+                                </tr>
+                                {renderEmployeeRows(tismashoEmployees, 'tismasho')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            );
+        };
+
+        // Month Sheet (Admin only) - Shows calculations
+        const MonthSheet = ({ month, data, company = 'main', employees }) => {
+            const monthData = MONTHS.find(m => m.id === month) || MONTHS[0];
+            const days = Array.from({ length: monthData.days }, (_, i) => i + 1);
+            
+            const companyKey = company === 'tismasho' ? 'tismasho' : 'sinergica';
+            const activeEmployees = employees.filter(e => e.nome.trim() !== '');
+            const monthDataValues = data[month] || { sinergica: {}, tismasho: {} };
+
+            const calculateSummary = (emp) => {
+                const empData = monthDataValues[companyKey]?.[emp.id] || { turni: {}, extra: {} };
+                
+                let hExtraDiurne = 0;
+                let hNottOrd = 0;
+                let hExtraNott = 0;
+                let ggFestivi = 0;
+                let ggAssenza = 0;
+                let certMedici = 0;
+
+                days.forEach(day => {
+                    const turno = (empData.turni[day] || '').toUpperCase();
+                    const extra = parseFloat(empData.extra[day]) || 0;
+                    const sunday = isSunday(monthData, day);
+
+                    // Ore extra diurne (turno D o N3 con extra positivo)
+                    if ((turno === 'D' || turno === 'N3') && extra > 0) {
+                        hExtraDiurne += extra;
+                    }
+
+                    // Ore notturne ordinarie
+                    if (turno === 'N1') hNottOrd += 3.5;
+                    if (turno === 'N2') hNottOrd += 3.5;
+                    if (turno === 'N3') hNottOrd += 0.5;
+
+                    // Ore extra notturne (turno N1 o N2 con extra positivo)
+                    if ((turno === 'N1' || turno === 'N2') && extra > 0) {
+                        hExtraNott += extra;
+                    }
+
+                    // Giorni festivi (domenica con turno attivo)
+                    if (sunday && turno && turno !== 'R' && turno !== 'F' && turno !== 'A' && turno !== 'CM') {
+                        ggFestivi++;
+                    }
+
+                    // Assenze
+                    if (turno === 'A') ggAssenza++;
+                    if (turno === 'CM') certMedici++;
+                });
+
+                const valGiorno = emp.stipendio / 26;
+                const valOra = valGiorno / 8;
+
+                const importoExtraDiurna = hExtraDiurne * valOra * 1.3;
+                const importoNottOrd = hNottOrd * valOra * 1.2;
+                const importoExtraNott = hExtraNott * valOra * 1.5;
+                const importoFestivi = ggFestivi * valGiorno * 0.3;
+                
+                // Deduzioni (assenze + ore mancanti)
+                let oreMancanti = 0;
+                days.forEach(day => {
+                    const extra = parseFloat(monthDataValues[companyKey]?.[emp.id]?.extra[day]) || 0;
+                    if (extra < 0) oreMancanti += Math.abs(extra);
+                });
+                const dedAssenze = (ggAssenza * valGiorno) + (oreMancanti * valOra);
+
+                const bonus = 0; // Può essere aggiunto manualmente
+                const totale = emp.stipendio + importoExtraDiurna + importoNottOrd + importoExtraNott + importoFestivi + bonus - dedAssenze;
+
+                return {
+                    hExtraDiurne,
+                    hNottOrd,
+                    hExtraNott,
+                    ggFestivi,
+                    ggAssenza,
+                    certMedici,
+                    valGiorno,
+                    valOra,
+                    importoExtraDiurna,
+                    importoNottOrd,
+                    importoExtraNott,
+                    importoFestivi,
+                    dedAssenze,
+                    bonus,
+                    totale
+                };
+            };
+
+            return (
+                <div className="sheet-container">
+                    <div className="sheet-header">
+                        <div className="sheet-title">
+                            <span className="emoji">📋</span>
+                            Gestione Ore – {company === 'tismasho' ? 'TISMASHO – ' : ''}{monthData.name}
+                        </div>
+                    </div>
+                    <div className="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>T</th>
+                                    <th>N°</th>
+                                    <th>COGNOME / NOME</th>
+                                    <th>STIP.</th>
+                                    {days.map(day => (
+                                        <th key={day} className={isSunday(monthData, day) ? 'col-sunday' : ''}>
+                                            <div>{day}</div>
+                                            <div style={{ fontSize: '10px', fontWeight: 400 }}>
+                                                {getWeekdayForDay(monthData, day)}
+                                            </div>
+                                        </th>
+                                    ))}
+                                    <th className="summary-header">H.Extra<br/>Diurne</th>
+                                    <th className="summary-header">H.Nott.<br/>Ord.</th>
+                                    <th className="summary-header">H.Extra<br/>Nott.</th>
+                                    <th className="summary-header">GG<br/>Festivi</th>
+                                    <th className="summary-header">GG<br/>Assenza</th>
+                                    <th className="summary-header">Cert.<br/>Medici</th>
+                                    <th className="summary-header">Val./<br/>Giorno</th>
+                                    <th className="summary-header">Val./<br/>Ora</th>
+                                    <th className="summary-header">Importo<br/>Extra D.</th>
+                                    <th className="summary-header">Importo<br/>Nott.Ord.</th>
+                                    <th className="summary-header">Importo<br/>Extra N.</th>
+                                    <th className="summary-header">Importo<br/>Festivi</th>
+                                    <th className="summary-header">Ded.<br/>Assenze</th>
+                                    <th className="summary-header">Bonus</th>
+                                    <th className="summary-header">TOTALE<br/>STIP.</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {activeEmployees.map((emp) => {
+                                    const empData = monthDataValues[companyKey]?.[emp.id] || { turni: {}, extra: {} };
+                                    const summary = calculateSummary(emp);
+
+                                    return (
+                                        <React.Fragment key={emp.id}>
+                                            <tr className="row-turno">
+                                                <td>T</td>
+                                                <td>{emp.id}</td>
+                                                <td>{emp.nome}</td>
+                                                <td>€{emp.stipendio}</td>
+                                                {days.map(day => (
+                                                    <td key={day} className={isSunday(monthData, day) ? 'col-sunday' : ''}>
+                                                        <span className={getTurnoClass(empData.turni[day])}>
+                                                            {empData.turni[day] || ''}
+                                                        </span>
+                                                    </td>
+                                                ))}
+                                                <td className="summary-col">{summary.hExtraDiurne || '-'}</td>
+                                                <td className="summary-col">{summary.hNottOrd || '-'}</td>
+                                                <td className="summary-col">{summary.hExtraNott || '-'}</td>
+                                                <td className="summary-col">{summary.ggFestivi || '-'}</td>
+                                                <td className="summary-col">{summary.ggAssenza || '-'}</td>
+                                                <td className="summary-col">{summary.certMedici || '-'}</td>
+                                                <td className="summary-col">€{summary.valGiorno.toFixed(2)}</td>
+                                                <td className="summary-col">€{summary.valOra.toFixed(2)}</td>
+                                                <td className="summary-col" style={{ color: 'var(--accent-success)' }}>
+                                                    {summary.importoExtraDiurna > 0 ? `€${summary.importoExtraDiurna.toFixed(2)}` : '-'}
+                                                </td>
+                                                <td className="summary-col" style={{ color: 'var(--accent-success)' }}>
+                                                    {summary.importoNottOrd > 0 ? `€${summary.importoNottOrd.toFixed(2)}` : '-'}
+                                                </td>
+                                                <td className="summary-col" style={{ color: 'var(--accent-success)' }}>
+                                                    {summary.importoExtraNott > 0 ? `€${summary.importoExtraNott.toFixed(2)}` : '-'}
+                                                </td>
+                                                <td className="summary-col" style={{ color: 'var(--accent-success)' }}>
+                                                    {summary.importoFestivi > 0 ? `€${summary.importoFestivi.toFixed(2)}` : '-'}
+                                                </td>
+                                                <td className="summary-col" style={{ color: 'var(--accent-danger)' }}>
+                                                    {summary.dedAssenze > 0 ? `€${summary.dedAssenze.toFixed(2)}` : '-'}
+                                                </td>
+                                                <td className="summary-col">{summary.bonus || '-'}</td>
+                                                <td className="summary-col" style={{ fontWeight: 600 }}>
+                                                    €{summary.totale.toFixed(2)}
+                                                </td>
+                                            </tr>
+                                            <tr className="row-extra">
+                                                <td>±</td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                {days.map(day => (
+                                                    <td key={day} className={isSunday(monthData, day) ? 'col-sunday' : ''}>
+                                                        <span className={getExtraClass(empData.extra[day])}>
+                                                            {empData.extra[day] || ''}
+                                                        </span>
+                                                    </td>
+                                                ))}
+                                                <td colSpan={15}></td>
+                                            </tr>
+                                        </React.Fragment>
+                                    );
+                                })}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            );
+        };
+
+        // Main Dashboard
+        const Dashboard = ({ role, onLogout }) => {
+            const [selectedMonth, setSelectedMonth] = useState('febbraio');
+            const [activeTab, setActiveTab] = useState(role === 'user' ? 'turni' : 'turni');
+            const [loading, setLoading] = useState(true);
+            const [data, setData] = useState(() => {
+                const initial = {};
+                ['febbraio', 'marzo', 'aprile', 'maggio', 'giugno', 'luglio', 'agosto', 'settembre', 'ottobre', 'novembre', 'dicembre'].forEach(m => {
+                    initial[m] = { sinergica: {}, tismasho: {} };
+                });
+                return initial;
+            });
+            const [sinergicaEmployees, setSinergicaEmployees] = useState(INITIAL_SINERGICA_EMPLOYEES);
+            const [tismashoEmployees, setTismashoEmployees] = useState(INITIAL_TISMASHO_EMPLOYEES);
+            const [showSaved, setShowSaved] = useState(false);
+            const [modalOpen, setModalOpen] = useState(null);
+
+            // Carica dati da Supabase all'avvio
+            useEffect(() => {
+                const loadData = async () => {
+                    try {
+                        // Carica dipendenti
+                        const { data: empData, error: empError } = await supabase
+                            .from('employees')
+                            .select('*')
+                            .order('position');
+                        
+                        if (empError) throw empError;
+
+                        if (empData && empData.length > 0) {
+                            const sinergica = empData
+                                .filter(e => e.company === 'sinergica')
+                                .map(e => ({ id: e.id, nome: e.nome, stipendio: e.stipendio }));
+                            const tismasho = empData
+                                .filter(e => e.company === 'tismasho')
+                                .map(e => ({ id: e.id, nome: e.nome, stipendio: e.stipendio }));
+                            
+                            // Aggiungi righe vuote se necessario
+                            while (sinergica.length < 87) {
+                                sinergica.push({ id: sinergica.length + 1, nome: '', stipendio: 1200 });
+                            }
+                            while (tismasho.length < 58) {
+                                tismasho.push({ id: tismasho.length + 1, nome: '', stipendio: 1200 });
+                            }
+                            
+                            setSinergicaEmployees(sinergica);
+                            setTismashoEmployees(tismasho);
+                        }
+
+                        // Carica turni
+                        const { data: shiftsData, error: shiftsError } = await supabase
+                            .from('shifts')
+                            .select('*');
+                        
+                        if (shiftsError) throw shiftsError;
+
+                        if (shiftsData && shiftsData.length > 0) {
+                            const newData = {};
+                            ['febbraio', 'marzo', 'aprile', 'maggio', 'giugno', 'luglio', 'agosto', 'settembre', 'ottobre', 'novembre', 'dicembre'].forEach(m => {
+                                newData[m] = { sinergica: {}, tismasho: {} };
+                            });
+
+                            shiftsData.forEach(shift => {
+                                const emp = empData?.find(e => e.id === shift.employee_id);
+                                if (emp) {
+                                    const company = emp.company;
+                                    const month = shift.month;
+                                    if (!newData[month]) newData[month] = { sinergica: {}, tismasho: {} };
+                                    if (!newData[month][company]) newData[month][company] = {};
+                                    if (!newData[month][company][shift.employee_id]) {
+                                        newData[month][company][shift.employee_id] = { turni: {}, extra: {} };
+                                    }
+                                    if (shift.turno) newData[month][company][shift.employee_id].turni[shift.day] = shift.turno;
+                                    if (shift.extra) newData[month][company][shift.employee_id].extra[shift.day] = shift.extra;
+                                }
+                            });
+                            setData(newData);
+                        }
+                    } catch (error) {
+                        console.error('Errore caricamento dati:', error);
+                        // Fallback a localStorage
+                        const saved = localStorage.getItem('turniData2026');
+                        if (saved) setData(JSON.parse(saved));
+                        const savedSine = localStorage.getItem('sinergicaEmployees');
+                        if (savedSine) setSinergicaEmployees(JSON.parse(savedSine));
+                        const savedTism = localStorage.getItem('tismashoEmployees');
+                        if (savedTism) setTismashoEmployees(JSON.parse(savedTism));
+                    } finally {
+                        setLoading(false);
+                    }
+                };
+                loadData();
+            }, []);
+
+            const handleDataChange = useCallback(async (month, company, empId, rowType, day, value) => {
+                setData(prev => {
+                    const newData = { ...prev };
+                    if (!newData[month]) newData[month] = { sinergica: {}, tismasho: {} };
+                    if (!newData[month][company]) newData[month][company] = {};
+                    if (!newData[month][company][empId]) newData[month][company][empId] = { turni: {}, extra: {} };
+                    newData[month][company][empId][rowType][day] = value;
+                    return newData;
+                });
+
+                // Salva su Supabase
+                try {
+                    const updateData = {
+                        employee_id: empId,
+                        month: month,
+                        day: day
+                    };
+                    if (rowType === 'turni') updateData.turno = value;
+                    if (rowType === 'extra') updateData.extra = value;
+
+                    const { error } = await supabase
+                        .from('shifts')
+                        .upsert(updateData, { onConflict: 'employee_id,month,day' });
+                    
+                    if (error) throw error;
+                } catch (error) {
+                    console.error('Errore salvataggio turno:', error);
+                }
+            }, []);
+
+            const handleSaveEmployees = async (company, employees) => {
+                if (company === 'sinergica') {
+                    setSinergicaEmployees(employees);
+                } else {
+                    setTismashoEmployees(employees);
+                }
+
+                // Salva su Supabase
+                try {
+                    for (let i = 0; i < employees.length; i++) {
+                        const emp = employees[i];
+                        if (emp.nome.trim()) {
+                            const { error } = await supabase
+                                .from('employees')
+                                .upsert({
+                                    id: emp.id,
+                                    company: company,
+                                    nome: emp.nome,
+                                    stipendio: emp.stipendio,
+                                    position: i
+                                }, { onConflict: 'id' });
+                            
+                            if (error) console.error('Errore salvataggio dipendente:', error);
+                        }
+                    }
+                    setShowSaved(true);
+                    setTimeout(() => setShowSaved(false), 2000);
+                } catch (error) {
+                    console.error('Errore salvataggio dipendenti:', error);
+                }
+            };
+
+            // Auto-save locale come backup
+            useEffect(() => {
+                const timer = setTimeout(() => {
+                    localStorage.setItem('turniData2026', JSON.stringify(data));
+                    localStorage.setItem('sinergicaEmployees', JSON.stringify(sinergicaEmployees));
+                    localStorage.setItem('tismashoEmployees', JSON.stringify(tismashoEmployees));
+                    setShowSaved(true);
+                    setTimeout(() => setShowSaved(false), 2000);
+                }, 1000);
+                return () => clearTimeout(timer);
+            }, [data, sinergicaEmployees, tismashoEmployees]);
+
+            const adminTabs = [
+                { id: 'config', label: '⚙️ Config' },
+                { id: 'turni', label: '📅 Inserimento Turni' },
+                { id: 'month', label: '📋 Foglio Mese' },
+                { id: 'tismasho', label: '📋 TISMASHO' },
+                { id: 'instructions', label: '📖 Istruzioni' }
+            ];
+
+            const userTabs = [
+                { id: 'turni', label: '📅 Inserimento Turni' }
+            ];
+
+            const tabs = role === 'admin' ? adminTabs : userTabs;
+
+            if (loading) {
+                return (
+                    <div className="login-container">
+                        <div className="login-box" style={{ textAlign: 'center' }}>
+                            <div className="login-logo">
+                                <h1>🕐 Gestione Turni</h1>
+                                <p>Caricamento dati...</p>
+                            </div>
+                            <div style={{ marginTop: 20, color: 'var(--accent-primary)' }}>
+                                ⏳ Connessione al database...
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            return (
+                <div className="dashboard">
+                    <header className="dashboard-header">
+                        <div className="header-left">
+                            <div className="header-logo">🕐 Gestione Turni 2026</div>
+                            <div className="month-selector">
+                                <select 
+                                    value={selectedMonth}
+                                    onChange={(e) => setSelectedMonth(e.target.value)}
+                                >
+                                    {MONTHS.map(m => (
+                                        <option key={m.id} value={m.id}>{m.name}</option>
+                                    ))}
+                                </select>
+                            </div>
+                        </div>
+                        <div className="header-right">
+                            <div className="user-badge">
+                                <span className="dot"></span>
+                                {role === 'admin' ? 'Admin' : 'User'}
+                            </div>
+                            <button className="btn-logout" onClick={onLogout}>
+                                Esci
+                            </button>
+                        </div>
+                    </header>
+
+                    <div className="tabs-container">
+                        <div className="tabs">
+                            {tabs.map(tab => (
+                                <button
+                                    key={tab.id}
+                                    className={`tab ${activeTab === tab.id ? 'active' : ''}`}
+                                    onClick={() => setActiveTab(tab.id)}
+                                >
+                                    {tab.label}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="content">
+                        {activeTab === 'config' && <ConfigSheet />}
+                        {activeTab === 'turni' && (
+                            <TurniSheet 
+                                month={selectedMonth} 
+                                data={data} 
+                                onDataChange={handleDataChange}
+                                sinergicaEmployees={sinergicaEmployees}
+                                tismashoEmployees={tismashoEmployees}
+                                onManageEmployees={(company) => setModalOpen(company)}
+                                isAdmin={role === 'admin'}
+                            />
+                        )}
+                        {activeTab === 'month' && (
+                            <MonthSheet 
+                                month={selectedMonth} 
+                                data={data}
+                                company="main"
+                                employees={sinergicaEmployees}
+                            />
+                        )}
+                        {activeTab === 'tismasho' && (
+                            <MonthSheet 
+                                month={selectedMonth} 
+                                data={data}
+                                company="tismasho"
+                                employees={tismashoEmployees}
+                            />
+                        )}
+                        {activeTab === 'instructions' && <InstructionsSheet />}
+                    </div>
+
+                    {modalOpen && (
+                        <EmployeeModal
+                            company={modalOpen}
+                            employees={modalOpen === 'sinergica' ? sinergicaEmployees : tismashoEmployees}
+                            onSave={(employees) => handleSaveEmployees(modalOpen, employees)}
+                            onClose={() => setModalOpen(null)}
+                        />
+                    )}
+
+                    <div className={`save-indicator ${showSaved ? 'visible' : ''}`}>
+                        ✓ Salvato automaticamente
+                    </div>
+                </div>
+            );
+        };
+
+        // Main App
+        const App = () => {
+            const [auth, setAuth] = useState(() => {
+                const saved = sessionStorage.getItem('auth');
+                return saved ? JSON.parse(saved) : null;
+            });
+
+            const handleLogin = (role) => {
+                const authData = { role, timestamp: Date.now() };
+                setAuth(authData);
+                sessionStorage.setItem('auth', JSON.stringify(authData));
+            };
+
+            const handleLogout = () => {
+                setAuth(null);
+                sessionStorage.removeItem('auth');
+            };
+
+            if (!auth) {
+                return <LoginScreen onLogin={handleLogin} />;
+            }
+
+            return <Dashboard role={auth.role} onLogout={handleLogout} />;
+        };
+
+        ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+    </script>
+</body>
+</html>
