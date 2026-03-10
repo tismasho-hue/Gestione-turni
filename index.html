@@ -456,14 +456,14 @@
 
         .cell-input {
             width: 100%;
-            min-width: 50px;
-            padding: 6px 4px;
+            min-width: 55px;
+            padding: 6px 2px;
             background: transparent;
             border: 1px solid transparent;
             border-radius: 4px;
             color: var(--text-primary);
             text-align: center;
-            font-size: 12px;
+            font-size: 11px;
             font-family: 'JetBrains Mono', monospace;
             font-weight: 500;
             transition: all 0.15s;
@@ -1517,7 +1517,7 @@
                                             value={empData.extra[day] || ''}
                                             onChange={(e) => handleCellChange(company, emp.id, 'extra', day, e.target.value)}
                                             disabled={readOnly}
-                                            maxLength={5}
+                                            maxLength={6}
                                         />
                                     </td>
                                 ))}
