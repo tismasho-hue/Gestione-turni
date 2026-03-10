@@ -1387,16 +1387,62 @@
                     </div>
 
                     <div className="instruction-card">
-                        <h3>⏱️ Ore Extra / Mancanti</h3>
+                        <h3>⏱️ Ritardi</h3>
                         <div className="instruction-list">
                             <div className="instruction-item">
-                                <span className="instruction-code extra-positive">+1</span>
-                                <span>+1 ora extra rispetto al turno</span>
+                                <span className="instruction-code extra-negative">-0.25</span>
+                                <span>15 minuti di ritardo</span>
                                 <span style={{ color: 'var(--text-muted)' }}>Scrivi nella riga ± (gialla)</span>
                             </div>
                             <div className="instruction-item">
                                 <span className="instruction-code extra-negative">-0.5</span>
-                                <span>30 min mancanti</span>
+                                <span>30 minuti di ritardo</span>
+                                <span style={{ color: 'var(--text-muted)' }}>Scrivi nella riga ± (gialla)</span>
+                            </div>
+                            <div className="instruction-item">
+                                <span className="instruction-code extra-negative">-0.75</span>
+                                <span>45 minuti di ritardo</span>
+                                <span style={{ color: 'var(--text-muted)' }}>Scrivi nella riga ± (gialla)</span>
+                            </div>
+                            <div className="instruction-item">
+                                <span className="instruction-code extra-negative">-1</span>
+                                <span>1 ora di ritardo</span>
+                                <span style={{ color: 'var(--text-muted)' }}>Scrivi nella riga ± (gialla)</span>
+                            </div>
+                            <div className="instruction-item">
+                                <span className="instruction-code extra-negative">-1.25</span>
+                                <span>1 ora e 15 min di ritardo</span>
+                                <span style={{ color: 'var(--text-muted)' }}>Scrivi nella riga ± (gialla)</span>
+                            </div>
+                            <div className="instruction-item">
+                                <span className="instruction-code extra-negative">-1.5</span>
+                                <span>1 ora e 30 min di ritardo</span>
+                                <span style={{ color: 'var(--text-muted)' }}>Scrivi nella riga ± (gialla)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="instruction-card">
+                        <h3>⏱️ Ore Straordinarie</h3>
+                        <div className="instruction-list">
+                            <div className="instruction-item">
+                                <span className="instruction-code extra-positive">+0.25</span>
+                                <span>15 minuti extra</span>
+                                <span style={{ color: 'var(--text-muted)' }}>Scrivi nella riga ± (gialla)</span>
+                            </div>
+                            <div className="instruction-item">
+                                <span className="instruction-code extra-positive">+0.5</span>
+                                <span>30 minuti extra</span>
+                                <span style={{ color: 'var(--text-muted)' }}>Scrivi nella riga ± (gialla)</span>
+                            </div>
+                            <div className="instruction-item">
+                                <span className="instruction-code extra-positive">+0.75</span>
+                                <span>45 minuti extra</span>
+                                <span style={{ color: 'var(--text-muted)' }}>Scrivi nella riga ± (gialla)</span>
+                            </div>
+                            <div className="instruction-item">
+                                <span className="instruction-code extra-positive">+1</span>
+                                <span>1 ora extra</span>
                                 <span style={{ color: 'var(--text-muted)' }}>Scrivi nella riga ± (gialla)</span>
                             </div>
                         </div>
@@ -1407,18 +1453,13 @@
                         <div className="instruction-list">
                             <div className="instruction-item">
                                 <span className="instruction-code" style={{ color: 'var(--accent-success)' }}>+30%</span>
-                                <span>Ore extra diurne</span>
-                                <span style={{ color: 'var(--text-muted)' }}>Calcolato su riga ± con turno D o N3</span>
+                                <span>Ore straordinarie</span>
+                                <span style={{ color: 'var(--text-muted)' }}>Calcolato su riga ± con valore positivo</span>
                             </div>
                             <div className="instruction-item">
                                 <span className="instruction-code" style={{ color: 'var(--accent-success)' }}>+20%</span>
                                 <span>Ore notturne ordinarie (23:00–02:30)</span>
                                 <span style={{ color: 'var(--text-muted)' }}>Calcolato per N1 e N2</span>
-                            </div>
-                            <div className="instruction-item">
-                                <span className="instruction-code" style={{ color: 'var(--accent-success)' }}>+50%</span>
-                                <span>Ore extra notturne</span>
-                                <span style={{ color: 'var(--text-muted)' }}>Calcolato su riga ± con turno N1 o N2</span>
                             </div>
                             <div className="instruction-item">
                                 <span className="instruction-code" style={{ color: 'var(--accent-success)' }}>+30%</span>
